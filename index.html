@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APX Clean ERP</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f11;--s:#18181c;--s2:#222228;--br:#2e2e38;--ac:#7c6aff;--ac2:#a78bfa;--gr:#22c55e;--re:#ef4444;--am:#f59e0b;--tx:#f0f0f5;--mu:#8888a0;--fn:'DM Sans',sans-serif;}
+body.light{--bg:#f4f4f8;--s:#ffffff;--s2:#eeeef4;--br:#d8d8e8;--ac:#6355e0;--ac2:#6355e0;--gr:#16a34a;--re:#dc2626;--am:#d97706;--tx:#0f0f11;--mu:#666680;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);min-height:100vh;}
+nav{background:var(--s);border-bottom:1px solid var(--br);padding:0 1.5rem;display:flex;align-items:center;height:56px;gap:.75rem;position:sticky;top:0;z-index:100;}
+.nb{font-size:.95rem;font-weight:600;color:var(--ac2);white-space:nowrap;}
+.nt{display:flex;gap:.15rem;flex-wrap:wrap;}
+.ntb{padding:.3rem .7rem;border-radius:8px;cursor:pointer;font-size:.78rem;color:var(--mu);border:none;background:none;font-family:var(--fn);transition:all .15s;}
+.ntb:hover,.ntb.on{color:var(--tx);background:var(--s2);}
+.pg{display:none;}.pg.on{display:block;}
+.pw{max-width:1100px;margin:0 auto;padding:1.5rem;}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem;}
+.pt{font-size:1.3rem;font-weight:600;letter-spacing:-.03em;}
+.ps{color:var(--mu);font-size:.85rem;margin-top:2px;}
+.btn{padding:.42rem .95rem;border-radius:9px;border:none;cursor:pointer;font-family:var(--fn);font-size:.8rem;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:.35rem;}
+.bp{background:var(--ac);color:#fff;}.bp:hover{background:#6350e0;}
+.bg{background:var(--s2);color:var(--tx);border:1px solid var(--br);}.bg:hover{border-color:var(--ac);}
+.bgr2{background:#0a2a14;color:var(--gr);border:1px solid #1a5c30;}.bgr2:hover{border-color:var(--gr);}
+.bre2{background:#2a0a0a;color:var(--re);border:1px solid #5c1a1a;}.bre2:hover{border-color:var(--re);}
+.bi{padding:.42rem .6rem;}
+.card{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:1.2rem 1.4rem;}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.875rem;margin-bottom:1.75rem;}
+.sc{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:1.2rem 1.4rem;}
+.sl{font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
+.sv{font-size:1.8rem;font-weight:600;letter-spacing:-.03em;}
+.sv.gr{color:var(--gr);}.sv.am{color:var(--am);}.sv.pu{color:var(--ac2);}.sv.re{color:var(--re);}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.83rem;}
+th{text-align:left;padding:.65rem .9rem;color:var(--mu);font-weight:500;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--br);}
+td{padding:.8rem .9rem;border-bottom:1px solid var(--br);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
+.bx{display:inline-flex;padding:.18rem .6rem;border-radius:20px;font-size:.7rem;font-weight:500;}
+.bgr{background:#0f2e1a;color:var(--gr);}.bre{background:#2e0f0f;color:var(--re);}.bam{background:#2e200f;color:var(--am);}.bpu{background:#1a1535;color:var(--ac2);}
+.mb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.mb.on{display:flex;}
+.mo{background:var(--s);border:1px solid var(--br);border-radius:18px;padding:1.6rem;width:100%;max-width:510px;max-height:90vh;overflow-y:auto;}
+.mt{font-size:.98rem;font-weight:600;margin-bottom:1.2rem;}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.ff{grid-column:1/-1;}
+.fi label{display:block;font-size:.68rem;color:var(--mu);margin-bottom:.3rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em;}
+.fi input,.fi select,.fi textarea{width:100%;background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.5rem .75rem;color:var(--tx);font-family:var(--fn);font-size:.83rem;transition:border-color .15s;}
+.fi input:focus,.fi select:focus,.fi textarea:focus{outline:none;border-color:var(--ac);}
+.fi textarea{resize:vertical;min-height:65px;}
+.fa{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;flex-wrap:wrap;}
+.al{padding:.55rem .8rem;border-radius:9px;font-size:.8rem;margin-bottom:.8rem;}
+.als{background:#0f2e1a;color:var(--gr);}.ale{background:#2e0f0f;color:var(--re);}
+.em{text-align:center;padding:2.5rem 1rem;color:var(--mu);font-size:.875rem;}
+/* clientes */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.875rem;}
+.cc{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:1.2rem;cursor:pointer;transition:border-color .15s;}
+.cc:hover{border-color:var(--ac);}
+.cn{font-weight:600;font-size:.95rem;margin-bottom:.2rem;}
+.cm{font-size:.78rem;color:var(--mu);line-height:1.6;}
+.cf{display:flex;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--br);}
+/* membresías */
+.mem-card{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;}
+.mem-card.activa{border-left:3px solid var(--gr);}
+.mem-card.vencida{border-left:3px solid var(--re);}
+.mem-card.pendiente{border-left:3px solid var(--am);}
+.mem-card.black{border-left:3px solid #4a6fa5;}
+.mem-card.luxury{border-left:3px solid #c9a84c;}
+.mem-card.flex{border-left:3px solid #22c55e;}
+.mem-tag{display:inline-flex;padding:.12rem .55rem;border-radius:20px;font-size:.68rem;font-weight:600;}
+.mem-tag.black{background:#1a1a2e22;color:#6c8ebf;border:1px solid #4a6fa544;}
+.mem-tag.luxury{background:#c9a84c22;color:#c9a84c;border:1px solid #c9a84c44;}
+.mem-tag.flex{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;}
+.mem-tag.default{background:var(--s2);color:var(--mu);border:1px solid var(--br);}
+.mem-info{flex:1;min-width:180px;}
+.mem-name{font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.2rem;}
+.mem-meta{font-size:.76rem;color:var(--mu);line-height:1.6;}
+.mem-price{font-size:1.05rem;font-weight:600;color:var(--gr);white-space:nowrap;}
+.mem-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
+.dias-badge{font-size:.68rem;padding:.18rem .55rem;border-radius:20px;font-weight:500;white-space:nowrap;}
+.dias-ok{background:#0f2e1a;color:var(--gr);}.dias-warn{background:#2e200f;color:var(--am);}.dias-late{background:#2e0f0f;color:var(--re);}
+.mem-total-bar{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.filter-tabs{display:flex;gap:.35rem;margin-bottom:1.1rem;flex-wrap:wrap;}
+.ftb{padding:.3rem .8rem;border-radius:20px;font-size:.78rem;cursor:pointer;border:1px solid var(--br);background:var(--s2);color:var(--mu);transition:all .15s;}
+.ftb.on{background:var(--ac);color:#fff;border-color:var(--ac);}
+.link-box{background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.55rem .8rem;font-size:.75rem;color:var(--mu);word-break:break-all;margin:.6rem 0;font-family:monospace;}
+.dr2{display:flex;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--br);font-size:.85rem;}
+.dr2:last-child{border-bottom:none;}
+.dl{color:var(--mu);}
+.sb{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.875rem;}
+.sbt{padding:.38rem .85rem;border-radius:8px;border:1px solid var(--br);background:var(--s2);color:var(--mu);font-family:var(--fn);font-size:.78rem;cursor:pointer;transition:all .15s;}
+.sbt:hover{color:var(--tx);border-color:var(--ac2);}
+/* profesionales */
+.pro-card{background:var(--s);border:1px solid var(--br);border-radius:14px;padding:1.1rem 1.3rem;display:flex;align-items:center;gap:.875rem;margin-bottom:.65rem;}
+.pro-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;flex-shrink:0;}
+.pro-info{flex:1;}
+.pro-name{font-weight:600;font-size:.9rem;}
+.pro-meta{font-size:.76rem;color:var(--mu);margin-top:2px;}
+/* vinculacion */
+.vin-card{background:var(--s);border:1px solid var(--br);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;}
+/* agenda */
+#aw{height:calc(100vh - 56px);display:flex;flex-direction:column;overflow:hidden;}
+.tb{display:flex;align-items:center;gap:.6rem;padding:.75rem 1.25rem;border-bottom:1px solid var(--br);flex-wrap:wrap;background:var(--s);}
+.pl{font-size:.95rem;font-weight:600;min-width:180px;text-align:center;}
+.vt{display:flex;background:var(--s2);border-radius:10px;padding:3px;gap:2px;border:1px solid var(--br);}
+.vtb{padding:.3rem .75rem;border-radius:7px;cursor:pointer;font-size:.76rem;color:var(--mu);border:none;background:none;font-family:var(--fn);transition:all .15s;white-space:nowrap;}
+.vtb.on{background:var(--ac);color:#fff;}
+.pf{display:flex;gap:.35rem;flex-wrap:wrap;}
+.pp{padding:.25rem .75rem;border-radius:20px;font-size:.73rem;cursor:pointer;border:1px solid var(--br);background:var(--s2);color:var(--mu);transition:all .15s;white-space:nowrap;}
+/* week */
+.wh{display:grid;border-bottom:1px solid var(--br);background:var(--s);}
+.whc{padding:.5rem .35rem;text-align:center;font-size:.72rem;border-right:1px solid var(--br);}
+.whc .dn{font-size:1.1rem;font-weight:600;display:block;line-height:1.1;}
+.whc .dd{color:var(--mu);font-size:.65rem;text-transform:uppercase;}
+.whc.td .dn{color:var(--ac2);}
+.wb{overflow-y:auto;flex:1;}
+.wr{display:grid;border-bottom:1px solid var(--br);}
+.wt{font-size:.65rem;color:var(--mu);text-align:right;padding:4px 6px 0 0;}
+.wc{border-right:1px solid var(--br);padding:2px;min-height:52px;cursor:pointer;}
+.wc:hover{background:rgba(124,106,255,.06);}
+.wc.tc{background:rgba(124,106,255,.04);}
+.ev{border-radius:5px;padding:3px 6px;margin-bottom:2px;font-size:.68rem;cursor:pointer;line-height:1.3;border-left:3px solid transparent;}
+.ev:hover{opacity:.82;}
+.ev .ec{font-weight:600;display:block;}
+.ev .et,.ev .ep{opacity:.75;display:block;}
+/* day */
+.db{overflow-y:auto;flex:1;}
+.dr{display:grid;border-bottom:1px solid var(--br);cursor:pointer;}
+.dr:hover{background:rgba(124,106,255,.04);}
+.dt{font-size:.65rem;color:var(--mu);text-align:right;padding:5px 6px 0 0;}
+.de{padding:3px;display:flex;gap:4px;flex-wrap:wrap;}
+.dev{border-radius:8px;padding:5px 9px;font-size:.78rem;cursor:pointer;min-width:140px;}
+.dev .dc{font-weight:600;}.dev .dm{font-size:.7rem;opacity:.8;margin-top:1px;}
+/* list */
+.lw{overflow-y:auto;flex:1;padding:1.1rem 1.4rem;}
+.lg{margin-bottom:1.4rem;}
+.ld{font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;padding-bottom:.35rem;border-bottom:1px solid var(--br);}
+.li{display:flex;align-items:center;gap:.875rem;padding:.7rem .9rem;background:var(--s);border:1px solid var(--br);border-radius:12px;margin-bottom:.45rem;cursor:pointer;transition:border-color .15s;}
+.li:hover{border-color:var(--ac);}
+.lh{font-size:.78rem;font-weight:600;min-width:42px;}
+.ldot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.lin{flex:1;}
+.lc{font-weight:600;font-size:.88rem;}
+.lm{font-size:.73rem;color:var(--mu);margin-top:1px;}
+.lp{font-weight:600;font-size:.88rem;color:var(--gr);}
+/* month */
+.mew{overflow-y:auto;flex:1;padding:.875rem 1.25rem;}
+.mhr{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;}
+.mdw{text-align:center;font-size:.65rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:.35rem 0;}
+.mgr{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.mc{background:var(--s);border:1px solid var(--br);border-radius:8px;min-height:80px;padding:5px;cursor:pointer;transition:border-color .15s;}
+.mc:hover{border-color:var(--ac);}.mc.om{opacity:.35;}.mc.td2{border-color:var(--ac2);}
+.mdn{font-size:.78rem;font-weight:600;margin-bottom:3px;}
+.mc.td2 .mdn{color:var(--ac2);}
+.mev{border-radius:4px;padding:2px 5px;font-size:.62rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mm{font-size:.62rem;color:var(--mu);margin-top:2px;}
+@media(max-width:640px){
+  .fg{grid-template-columns:1fr;}
+  .ntb{padding:.28rem .5rem;font-size:.74rem;}
+  .pw{padding:1rem;}
+  .pl{min-width:100px;font-size:.85rem;}
+  .tb{gap:.4rem;padding:.65rem 1rem;}
+  .mc{min-height:52px;}
+  .mem-card{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nb">◆ APX Clean</div>
+  <button id="theme-btn" onclick="toggleTheme()" style="padding:.28rem .6rem;border-radius:8px;border:1px solid var(--br);background:var(--s2);color:var(--tx);font-family:var(--fn);font-size:.78rem;cursor:pointer;transition:all .15s">🌙</button>
+  <div class="nt">
+    <button class="ntb on" onclick="GP('dash',this)">Dashboard</button>
+    <button class="ntb" onclick="GP('cli',this)">Clientes</button>
+    <button class="ntb" onclick="GP('mem',this)">Membresías</button>
+    <button class="ntb" onclick="GP('ag',this)">Agenda</button>
+    <button class="ntb" onclick="GP('pro',this)">Profesionales</button>
+    <button class="ntb" onclick="GP('srv',this)">Servicios</button>
+    <button class="ntb" onclick="GP('cx',this)">Caja</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="p-dash" class="pg on"><div class="pw">
+  <div id="da"></div>
+  <div class="ph">
+    <div><div class="pt">Dashboard</div><div class="ps">Resumen de tu negocio</div></div>
+    <button class="btn bg" onclick="sincMP()" id="btn-sinc">↻ Sincronizar MP</button>
+  </div>
+  <div class="sg">
+    <div class="sc"><div class="sl">Clientes activos</div><div class="sv pu" id="sc1">—</div></div>
+    <div class="sc"><div class="sl">Membresías activas</div><div class="sv gr" id="sc2">—</div></div>
+    <div class="sc"><div class="sl">Vencen esta semana</div><div class="sv am" id="sc3">—</div></div>
+    <div class="sc"><div class="sl">Sin pago</div><div class="sv re" id="sc4">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:1.1rem">
+    <div style="font-weight:600;margin-bottom:.875rem">⚠️ Requieren atención</div>
+    <div id="dash-alertas"><div style="color:var(--mu);font-size:.83rem">Cargando...</div></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:.875rem">Próximos servicios</div>
+    <div class="tw"><table><thead><tr><th>Cliente</th><th>Servicio</th><th>Fecha</th><th>Estado</th></tr></thead>
+    <tbody id="ptb"></tbody></table></div>
+  </div>
+</div></div>
+
+<!-- CLIENTES -->
+<div id="p-cli" class="pg"><div class="pw">
+  <div id="ca"></div>
+  <div class="ph">
+    <div><div class="pt">Clientes</div><div class="ps" id="cc">—</div></div>
+    <button class="btn bp" onclick="abrirModal('mc')">+ Nuevo cliente</button>
+  </div>
+  <div class="card" style="margin-bottom:.875rem;padding:.75rem 1rem;">
+    <input type="text" id="sc0" placeholder="🔍  Buscar nombre, teléfono, colonia..." oninput="FC()" style="width:100%;background:transparent;border:none;color:var(--tx);font-family:var(--fn);font-size:.85rem;outline:none;">
+  </div>
+  <div class="cg" id="cg"></div>
+</div></div>
+
+<!-- MEMBRESÍAS -->
+<div id="p-mem" class="pg"><div class="pw">
+  <div id="mema"></div>
+  <div class="ph">
+    <div><div class="pt">Membresías</div><div class="ps" id="mem-count">—</div></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+      <button class="btn bg" onclick="sincMPSilent()">↻ Sincronizar MP</button>
+      <button class="btn bp" onclick="abrirModal('m-nueva')">+ Asignar</button>
+    </div>
+  </div>
+  <div class="mem-total-bar">
+    <div>
+      <div style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">Facturado en membresías activas</div>
+      <div style="font-size:1.4rem;font-weight:600;color:var(--gr)" id="mem-total">—</div>
+    </div>
+    <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-left:auto">
+      <span style="font-size:.75rem;color:var(--mu)">Rango:</span>
+      <input type="date" id="mem-desde" onchange="filtrarMemFecha()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem">
+      <span style="color:var(--mu);font-size:.78rem">a</span>
+      <input type="date" id="mem-hasta" onchange="filtrarMemFecha()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem">
+      <button class="btn bg" onclick="limpiarFiltroMem()" style="font-size:.73rem">✕</button>
+    </div>
+  </div>
+  <div class="filter-tabs">
+    <button class="ftb on" onclick="filtMem('todas',this)">Todas</button>
+    <button class="ftb" onclick="filtMem('activa',this)">Activas</button>
+    <button class="ftb" onclick="filtMem('vencida',this)">Vencidas</button>
+    <button class="ftb" onclick="filtMem('pendiente',this)">Pendientes</button>
+  </div>
+  <div id="mem-lista"></div>
+  <div id="vin-section" style="display:none;margin-top:1.5rem">
+    <div style="font-weight:600;font-size:.95rem;margin-bottom:.5rem">🔗 Membresías sin cliente asignado</div>
+    <div class="ps" style="margin-bottom:.875rem">Llegaron de MercadoPago. Escribe el nombre del cliente para vincularlas.</div>
+    <div id="vin-lista"></div>
+  </div>
+</div></div>
+
+<!-- AGENDA -->
+<div id="p-ag" class="pg">
+  <div id="aw">
+    <div class="tb">
+      <div style="display:flex;align-items:center;gap:.4rem">
+        <button class="btn bg bi" onclick="navPrev()">←</button>
+        <div class="pl" id="pl">—</div>
+        <button class="btn bg bi" onclick="navNext()">→</button>
+        <button class="btn bg" onclick="irHoy()" style="font-size:.73rem">Hoy</button>
+      </div>
+      <div class="vt">
+        <button class="vtb on" onclick="setVista('s')">Semana</button>
+        <button class="vtb" onclick="setVista('d')">Día</button>
+        <button class="vtb" onclick="setVista('l')">Lista</button>
+        <button class="vtb" onclick="setVista('m')">Mes</button>
+      </div>
+      <div class="pf" id="pf"></div>
+      <button class="btn bp" onclick="abrirNuevoServicio(null,null)" style="margin-left:auto">+ Agendar</button>
+    </div>
+    <div id="vs" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <div id="wh" class="wh"></div>
+      <div id="wb" class="wb"></div>
+    </div>
+    <div id="vd" style="display:none;flex-direction:column;flex:1;overflow:hidden;"><div id="db" class="db"></div></div>
+    <div id="vl" style="display:none;flex-direction:column;flex:1;overflow:hidden;"><div class="lw"><div id="lb"></div></div></div>
+    <div id="vm" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="mew">
+        <div class="mhr"><div class="mdw">Dom</div><div class="mdw">Lun</div><div class="mdw">Mar</div><div class="mdw">Mié</div><div class="mdw">Jue</div><div class="mdw">Vie</div><div class="mdw">Sáb</div></div>
+        <div class="mgr" id="mg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFESIONALES -->
+<div id="p-pro" class="pg"><div class="pw">
+  <div id="proa"></div>
+  <div class="ph">
+    <div><div class="pt">Profesionales</div><div class="ps" id="pro-count">—</div></div>
+    <button class="btn bp" onclick="abrirNuevoPro()">+ Nuevo</button>
+  </div>
+  <div id="pro-lista"></div>
+</div></div>
+
+<!-- SERVICIOS -->
+<div id="p-srv" class="pg"><div class="pw">
+  <div id="sva"></div>
+  <div class="ph">
+    <div><div class="pt">Servicios</div><div class="ps">Catálogo y comisiones</div></div>
+    <button class="btn bp" onclick="abrirNuevoSrv()">+ Nuevo servicio</button>
+  </div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="font-weight:600;margin-bottom:.875rem">Catálogo de servicios</div>
+    <div class="tw"><table><thead><tr><th>Servicio</th><th>Precio</th><th>Estado</th><th></th></tr></thead>
+    <tbody id="cat-tb"></tbody></table></div>
+  </div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem">
+      <div style="font-weight:600">💰 Comisiones por profesional / servicio</div>
+      <button class="btn bg" onclick="abrirModal('m-com')">+ Agregar comisión</button>
+    </div>
+    <div class="ps" style="margin-bottom:.875rem">Cuando un servicio se marca como "Realizado" se registra la comisión automáticamente en Caja.</div>
+    <div id="com-lista"></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:.875rem">Servicios agendados</div>
+    <div class="tw"><table><thead><tr><th>Cliente</th><th>Servicio</th><th>Profesional</th><th>Fecha</th><th>Precio</th><th>Estado</th></tr></thead>
+    <tbody id="stb"></tbody></table></div>
+  </div>
+</div></div>
+
+<!-- CAJA -->
+<div id="p-cx" class="pg"><div class="pw">
+  <div id="cxa"></div>
+  <div class="ph">
+    <div><div class="pt">Flujo de caja</div><div class="ps">Ingresos y egresos</div></div>
+    <button class="btn bp" onclick="abrirModal('mcx')">+ Registrar</button>
+  </div>
+  <div class="card" style="margin-bottom:1.1rem;padding:.9rem 1.1rem">
+    <div style="display:flex;align-items:center;gap:.875rem;flex-wrap:wrap">
+      <span style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em">Filtrar por fecha</span>
+      <input type="date" id="cx-desde" onchange="LCX()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem">
+      <span style="color:var(--mu);font-size:.78rem">a</span>
+      <input type="date" id="cx-hasta" onchange="LCX()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem">
+      <button class="btn bg" onclick="limpiarCaja()" style="font-size:.73rem">✕ Limpiar</button>
+    </div>
+  </div>
+  <div class="sg" style="margin-bottom:1.25rem">
+    <div class="sc"><div class="sl">Ingresos</div><div class="sv gr" id="ci">—</div></div>
+    <div class="sc"><div class="sl">Egresos</div><div class="sv re" id="ce">—</div></div>
+    <div class="sc"><div class="sl">Balance</div><div class="sv pu" id="cb">—</div></div>
+  </div>
+  <div class="card"><div class="tw">
+    <table><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Tipo</th><th>Monto</th></tr></thead>
+    <tbody id="cxtb"></tbody></table>
+  </div></div>
+</div></div>
+
+<!-- MODALES -->
+<!-- Cliente -->
+<div class="mb" id="mc"><div class="mo">
+  <div class="mt">Nuevo cliente</div>
+  <div class="fg">
+    <div class="fi"><label>Nombre *</label><input id="cn" placeholder="Juan García"></div>
+    <div class="fi"><label>Teléfono</label><input id="ct" placeholder="686-123-4567"></div>
+    <div class="fi"><label>Email</label><input id="ce2" type="email"></div>
+    <div class="fi"><label>Colonia</label><input id="col"></div>
+    <div class="fi ff"><label>Dirección</label><input id="cd"></div>
+    <div class="fi ff"><label>Notas</label><textarea id="cno"></textarea></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('mc')">Cancelar</button><button class="btn bp" onclick="guardarCliente()">Guardar</button></div>
+</div></div>
+
+<!-- Editar membresía -->
+<div class="mb" id="m-mem-edit"><div class="mo">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+    <div class="mt" style="margin:0">Editar membresía</div>
+    <button class="btn bg bi" onclick="cerrarModal('m-mem-edit')">✕</button>
+  </div>
+  <div id="m-mem-edit-alert"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Nombre del cliente</label><input id="me-nombre" placeholder="Nombre completo"></div>
+    <div class="fi ff"><label>Email</label><input id="me-email" type="email"></div>
+    <div class="fi"><label>Teléfono</label><input id="me-tel"></div>
+    <div class="fi"><label>Monto mensual</label><input type="number" id="me-monto"></div>
+    <div class="fi ff"><label>Plan / Membresía</label><input id="me-plan"></div>
+    <div class="fi"><label>Próximo pago</label><input type="date" id="me-prox"></div>
+    <div class="fi"><label>Estado</label><select id="me-estado"><option value="activa">Activa</option><option value="pendiente">Pendiente</option><option value="vencida">Vencida</option></select></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-mem-edit')">Cancelar</button><button class="btn bp" onclick="guardarEditMem()">Guardar</button></div>
+</div></div>
+
+<!-- Nueva membresía -->
+<div class="mb" id="m-nueva"><div class="mo">
+  <div class="mt">Asignar membresía</div>
+  <div id="m-nueva-alert"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Cliente *</label><select id="m-cli"></select></div>
+    <div class="fi ff"><label>Plan de MP</label><select id="m-plan"></select></div>
+    <div class="fi"><label>Precio mensual *</label><input type="number" id="m-precio"></div>
+    <div class="fi"><label>Próximo pago</label><input type="date" id="m-prox"></div>
+    <div class="fi ff"><label>Link suscripción MP</label><input id="m-link" placeholder="https://mpago.la/..."></div>
+    <div class="fi ff"><label>Estado</label><select id="m-estado"><option value="activa">Activa</option><option value="pendiente">Pendiente</option><option value="vencida">Vencida</option></select></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-nueva')">Cancelar</button><button class="btn bp" onclick="guardarMembresia()">Guardar</button></div>
+</div></div>
+
+<!-- Detalle membresía -->
+<div class="mb" id="m-detalle"><div class="mo">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+    <div class="mt" style="margin:0" id="m-det-title">Membresía</div>
+    <button class="btn bg bi" onclick="cerrarModal('m-detalle')">✕</button>
+  </div>
+  <div id="m-det-body"></div>
+  <div id="m-det-link"></div>
+  <div class="fa" id="m-det-actions"></div>
+</div></div>
+
+<!-- Pago membresía -->
+<div class="mb" id="m-pago"><div class="mo">
+  <div class="mt">Registrar pago</div>
+  <div id="m-pago-alert"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Monto *</label><input type="number" id="mp-monto"></div>
+    <div class="fi"><label>Fecha *</label><input type="date" id="mp-fecha"></div>
+    <div class="fi"><label>Método</label><select id="mp-metodo"><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option><option value="mercadopago">MercadoPago</option></select></div>
+    <div class="fi ff"><label>Próximo pago</label><input type="date" id="mp-prox"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-pago')">Cancelar</button><button class="btn bp" onclick="confirmarPago()">Confirmar ✓</button></div>
+</div></div>
+
+<!-- Profesional -->
+<div class="mb" id="m-pro"><div class="mo">
+  <div class="mt" id="m-pro-title">Nuevo profesional</div>
+  <div id="m-pro-alert"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Nombre *</label><input id="pro-nombre" placeholder="Ana García"></div>
+    <div class="fi"><label>Teléfono</label><input id="pro-tel"></div>
+    <div class="fi"><label>% Comisión base</label><input type="number" id="pro-com" placeholder="30"></div>
+    <div class="fi ff"><label>Email</label><input id="pro-email" type="email"></div>
+    <div class="fi ff"><label>Notas</label><input id="pro-notas"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-pro')">Cancelar</button><button class="btn bp" onclick="guardarPro()">Guardar</button></div>
+</div></div>
+
+<!-- Nuevo servicio catálogo -->
+<div class="mb" id="m-srv-nuevo"><div class="mo">
+  <div class="mt" id="m-srv-title">Nuevo servicio</div>
+  <div id="m-srv-alert"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Nombre *</label><input id="srv-nombre" placeholder="Limpieza básica"></div>
+    <div class="fi"><label>Precio *</label><input type="number" id="srv-precio" placeholder="350"></div>
+    <div class="fi"><label>Estado</label><select id="srv-estado"><option value="true">Activo</option><option value="false">Inactivo</option></select></div>
+    <div class="fi ff"><label>Descripción</label><input id="srv-desc"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-srv-nuevo')">Cancelar</button><button class="btn bp" onclick="guardarSrv()">Guardar</button></div>
+</div></div>
+
+<!-- Comisión -->
+<div class="mb" id="m-com"><div class="mo">
+  <div class="mt">Agregar comisión</div>
+  <div id="m-com-alert"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Profesional *</label><select id="com-pro"></select></div>
+    <div class="fi ff"><label>Servicio *</label><select id="com-srv"></select></div>
+    <div class="fi"><label>Tipo</label><select id="com-tipo"><option value="porcentaje">% del servicio</option><option value="fijo">Monto fijo $</option></select></div>
+    <div class="fi"><label>Valor *</label><input type="number" id="com-val" placeholder="30"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-com')">Cancelar</button><button class="btn bp" onclick="guardarComision()">Guardar</button></div>
+</div></div>
+
+<!-- Agenda: agendar/editar -->
+<div class="mb" id="maf"><div class="mo">
+  <div class="mt" id="maft">Agendar servicio</div>
+  <div id="maa"></div>
+  <div class="fg">
+    <div class="fi ff"><label>Cliente *</label><select id="fc"></select></div>
+    <div class="fi ff"><label>Servicio *</label><select id="fs" onchange="autoPrice()"></select></div>
+    <div class="fi ff"><label>Profesional</label><select id="fp"></select></div>
+    <div class="fi"><label>Fecha *</label><input type="date" id="ff"></div>
+    <div class="fi"><label>Hora</label><input type="time" id="fh"></div>
+    <div class="fi"><label>Precio</label><input type="number" id="fpr"></div>
+    <div class="fi"><label>Estado</label><select id="fe"><option value="por_confirmar">Por confirmar</option><option value="confirmado">Confirmado</option><option value="realizado">Realizado</option><option value="no_realizado">No realizado</option></select></div>
+    <div class="fi ff"><label>Notas</label><input type="text" id="fn2"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('maf')">Cancelar</button><button class="btn bp" onclick="guardarAgenda()">Guardar</button></div>
+</div></div>
+
+<!-- Detalle servicio -->
+<div class="mb" id="mdet"><div class="mo">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+    <div class="mt" style="margin:0" id="dtt">Servicio</div>
+    <button class="btn bg bi" onclick="cerrarModal('mdet')">✕</button>
+  </div>
+  <div id="db2"></div>
+  <div class="sb" id="dac"></div>
+</div></div>
+
+<!-- Caja -->
+<div class="mb" id="mcx"><div class="mo">
+  <div class="mt">Registrar movimiento</div>
+  <div class="fg">
+    <div class="fi"><label>Tipo *</label><select id="cxt"><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option></select></div>
+    <div class="fi"><label>Monto *</label><input type="number" id="cxm"></div>
+    <div class="fi ff"><label>Concepto *</label><input id="cxc"></div>
+    <div class="fi"><label>Categoría</label><select id="cxk"><option value="servicio">Servicio</option><option value="membresia">Membresía</option><option value="salario">Salario</option><option value="material">Material</option><option value="gasolina">Gasolina</option><option value="otro">Otro</option></select></div>
+    <div class="fi"><label>Fecha</label><input type="date" id="cxf"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('mcx')">Cancelar</button><button class="btn bp" onclick="guardarCaja()">Guardar</button></div>
+</div></div>
+
+<script>
+const SU='https://rcgficsjqelhukbtttbr.supabase.co';
+const SK='sb_publishable_4i6jWY4hFAP4d0zeqHEbxQ_ml1E2umw';
+const {createClient}=supabase;
+const db=createClient(SU,SK);
+const PC=['#7c6aff','#22c55e','#f59e0b','#ec4899','#3b82f6','#ef4444'];
+const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DIAS_S=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+// ═══ UTILS ═══
+function fmt(d){return d.toISOString().split('T')[0];}
+function fmtHora(h){return String(h).padStart(2,'0')+':00';}
+function weekStart(d){const day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);return new Date(d.getFullYear(),d.getMonth(),diff);}
+function badge(e){
+  const m={por_confirmar:'bam',pendiente:'bam',confirmado:'bgr',realizado:'bpu',no_realizado:'bre',cancelado:'bre',activa:'bgr',vencida:'bre'};
+  const l={por_confirmar:'Por confirmar',confirmado:'Confirmado',realizado:'Realizado',no_realizado:'No realizado',cancelado:'Cancelado',pendiente:'Pendiente',activa:'Activa',vencida:'Vencida'};
+  return '<span class="bx '+(m[e]||'bam')+'">'+(l[e]||e)+'</span>';
+}
+function diasR(f){if(!f)return null;const h=new Date();h.setHours(0,0,0,0);return Math.ceil((new Date(f+'T12:00:00')-h)/864e5);}
+function diasBadge(d){
+  if(d===null)return '';
+  if(d<0)return '<span class="dias-badge dias-late">Vencido hace '+Math.abs(d)+'d</span>';
+  if(d===0)return '<span class="dias-badge dias-late">Vence hoy</span>';
+  if(d<=5)return '<span class="dias-badge dias-warn">Vence en '+d+'d</span>';
+  return '<span class="dias-badge dias-ok">Vence en '+d+'d</span>';
+}
+function memColor(tipo){if(!tipo)return'activa';const t=tipo.toLowerCase();if(t.includes('black'))return'black';if(t.includes('luxury'))return'luxury';if(t.includes('flex'))return'flex';return'activa';}
+function memTagClass(tipo){if(!tipo)return'default';const t=tipo.toLowerCase();if(t.includes('black'))return'black';if(t.includes('luxury'))return'luxury';if(t.includes('flex'))return'flex';return'default';}
+function memTagLabel(tipo){if(!tipo)return'PLAN';const t=tipo.toLowerCase();if(t.includes('black'))return'BLACK';if(t.includes('luxury'))return'LUXURY';if(t.includes('flex'))return'FLEX';return(tipo).substring(0,8).toUpperCase();}
+function SA(aid,msg,t){const a=document.getElementById(aid);if(!a)return;a.innerHTML='<div class="al al'+(t==='e'?'e':'s')+'">'+msg+'</div>';setTimeout(()=>a.innerHTML='',4000);}
+function abrirModal(id){document.getElementById(id).classList.add('on');}
+function cerrarModal(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.mb').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');}));
+
+// ═══ TEMA ═══
+function toggleTheme(){const b=document.body;b.classList.toggle('light');const l=b.classList.contains('light');document.getElementById('theme-btn').textContent=l?'☀️':'🌙';localStorage.setItem('theme',l?'light':'dark');}
+(function(){if(localStorage.getItem('theme')==='light'){document.body.classList.add('light');setTimeout(()=>{const b=document.getElementById('theme-btn');if(b)b.textContent='☀️';},50);}})();
+
+// ═══ NAV ═══
+function GP(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntb').forEach(t=>t.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='dash')LCD();
+  if(id==='cli')LCL();
+  if(id==='mem')LMem();
+  if(id==='ag')agInit();
+  if(id==='pro')LPro();
+  if(id==='srv')LSrv();
+  if(id==='cx')LCX();
+}
+
+// ═══ DASHBOARD ═══
+async function LCD(){
+  const hoy=new Date();
+  const i0=fmt(new Date(hoy.getFullYear(),hoy.getMonth(),1));
+  const i1=fmt(new Date(hoy.getFullYear(),hoy.getMonth()+1,0));
+  const sem=new Date(hoy);sem.setDate(hoy.getDate()+7);
+  const [{count:nc},{data:mems},{data:prox}]=await Promise.all([
+    db.from('clientes').select('*',{count:'exact',head:true}).eq('activo',true),
+    db.from('membresias').select('*, clientes(nombre)').eq('activa',true),
+    db.from('servicios_agendados').select('*, clientes(nombre), servicios_catalogo(nombre)').gte('fecha_servicio',fmt(hoy)).order('fecha_servicio').limit(8)
+  ]);
+  document.getElementById('sc1').textContent=nc??0;
+  const act=(mems||[]).filter(m=>m.estado==='activa');
+  const vSem=(mems||[]).filter(m=>{const d=diasR(m.fecha_vencimiento);return d!==null&&d>=0&&d<=7;});
+  const sinP=(mems||[]).filter(m=>m.estado==='vencida'||m.estado==='pendiente');
+  document.getElementById('sc2').textContent=act.length;
+  document.getElementById('sc3').textContent=vSem.length;
+  document.getElementById('sc4').textContent=sinP.length;
+  const altas=(mems||[]).filter(m=>{const d=diasR(m.fecha_vencimiento);return d!==null&&d<=7;});
+  const da=document.getElementById('dash-alertas');
+  if(!altas.length){da.innerHTML='<div style="color:var(--mu);font-size:.83rem">✅ Todo al corriente</div>';}
+  else{da.innerHTML=altas.map(m=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--br)"><div><strong>'+(m.clientes?.nombre||m.payer_email||'Sin identificar')+'</strong> <span style="color:var(--mu);font-size:.78rem">· $'+Number(m.precio_mensual||0).toLocaleString('es-MX')+'/mes</span></div>'+diasBadge(diasR(m.fecha_vencimiento))+'</div>').join('');}
+  document.getElementById('ptb').innerHTML=prox?.length?prox.map(s=>'<tr><td><strong>'+(s.clientes?.nombre||'—')+'</strong></td><td>'+(s.servicios_catalogo?.nombre||'—')+'</td><td>'+s.fecha_servicio+'</td><td>'+badge(s.estado)+'</td></tr>').join(''):'<tr><td colspan="4" style="text-align:center;color:var(--mu);padding:1.5rem">No hay servicios próximos</td></tr>';
+}
+
+// ═══ SINCRONIZAR MP ═══
+async function sincMPSilent(){await sincMP(true);}
+async function sincMP(silent){
+  const btn=document.getElementById('btn-sinc');
+  if(btn){btn.textContent='Sincronizando...';btn.disabled=true;}
+  try{
+    const r=await fetch('https://rcgficsjqelhukbtttbr.supabase.co/functions/v1/mp-sync',{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK}});
+    const d=await r.json();
+    if(d.ok){if(!silent)SA('mema','✅ '+d.nuevas+' nuevas, '+d.actualizadas+' actualizadas de '+d.total+' suscripciones');LMem();LCD();}
+    else{if(!silent)SA('mema','Error: '+(d.error||'desconocido'),'e');}
+  }catch(e){if(!silent)SA('mema','Error: '+e.message,'e');}
+  finally{if(btn){btn.textContent='↻ Sincronizar MP';btn.disabled=false;}}
+}
+
+// ═══ CLIENTES ═══
+let allCli=[];
+async function LCL(){
+  const{data}=await db.from('clientes').select('*, membresias(activa,estado,fecha_vencimiento,precio_mensual)').eq('activo',true).order('nombre');
+  allCli=data||[];RC(allCli);
+  document.getElementById('cc').textContent=allCli.length+' clientes';
+}
+function RC(l){
+  const g=document.getElementById('cg');
+  if(!l.length){g.innerHTML='<div class="em">👥<br>No hay clientes</div>';return;}
+  g.innerHTML=l.map(c=>{
+    const ma=c.membresias?.find(m=>m.activa&&m.estado==='activa');
+    const ms=Math.floor((Date.now()-new Date(c.created_at))/864e5/30);
+    const d=ma?diasR(ma.fecha_vencimiento):null;
+    return '<div class="cc"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="cn">'+c.nombre+'</div>'+(ma?'<span class="bx bgr">Activa</span>':'<span class="bx bam">Sin membresía</span>')+'</div><div class="cm">'+(c.telefono?'📱 '+c.telefono+'<br>':'')+(c.colonia?'📍 '+c.colonia:'')+' '+(ma?'💳 $'+Number(ma.precio_mensual).toLocaleString('es-MX')+'/mes':'')+'</div><div class="cf"><span style="font-size:.73rem;color:var(--mu)">'+ms+' mes'+(ms!==1?'es':'')+'</span>'+(d!==null?diasBadge(d):'')+'</div></div>';
+  }).join('');
+}
+function FC(){const q=document.getElementById('sc0').value.toLowerCase();RC(allCli.filter(c=>c.nombre?.toLowerCase().includes(q)||c.telefono?.includes(q)||c.colonia?.toLowerCase().includes(q)));}
+async function guardarCliente(){
+  const n=document.getElementById('cn').value.trim();
+  if(!n){SA('ca','El nombre es obligatorio','e');return;}
+  const{error}=await db.from('clientes').insert({nombre:n,telefono:document.getElementById('ct').value||null,email:document.getElementById('ce2').value||null,colonia:document.getElementById('col').value||null,direccion:document.getElementById('cd').value||null,notas:document.getElementById('cno').value||null});
+  if(error){SA('ca','Error: '+error.message,'e');return;}
+  SA('ca','✅ Cliente guardado');cerrarModal('mc');
+  ['cn','ct','ce2','col','cd','cno'].forEach(id=>document.getElementById(id).value='');
+  LCL();
+}
+
+// ═══ MEMBRESÍAS ═══
+let allMems=[],memFiltro='todas',memEditId=null,memPagoId=null,mpPlanes=[];
+async function LMem(){
+  await cargarPlanesMP();
+  const{data}=await db.from('membresias').select('*, clientes(nombre,telefono,email)').eq('activa',true).order('fecha_vencimiento',{ascending:true});
+  allMems=data||[];
+  renderMems();
+  document.getElementById('mem-count').textContent=allMems.length+' membresías registradas';
+  await LVin();
+}
+async function cargarPlanesMP(){
+  try{
+    const{data:cfg}=await db.from('configuracion').select('valor').eq('clave','mp_access_token').single();
+    if(!cfg)return;
+    const r=await fetch('https://api.mercadopago.com/preapproval_plan/search?status=active&limit=50',{headers:{'Authorization':'Bearer '+cfg.valor}});
+    if(r.ok){const d=await r.json();mpPlanes=d.results||[];}
+  }catch(e){}
+}
+function renderMems(){
+  const lista=document.getElementById('mem-lista');
+  let mems=allMems;
+  if(memFiltro==='activa')mems=allMems.filter(m=>m.activa&&m.estado==='activa');
+  else if(memFiltro==='vencida')mems=allMems.filter(m=>m.estado==='vencida');
+  else if(memFiltro==='pendiente')mems=allMems.filter(m=>m.estado==='pendiente');
+  const total=allMems.filter(m=>m.activa).reduce((s,m)=>s+Number(m.precio_mensual||0),0);
+  const el=document.getElementById('mem-total');
+  if(el)el.textContent='$'+total.toLocaleString('es-MX')+'/mes';
+  if(!mems.length){lista.innerHTML='<div class="em">No hay membresías en este filtro</div>';return;}
+  lista.innerHTML=mems.map(m=>{
+    const d=diasR(m.fecha_vencimiento);
+    const estadoCls=m.estado==='activa'?'activa':m.estado==='vencida'?'vencida':'pendiente';
+    const colorCls=memColor(m.tipo);
+    const tagCls=memTagClass(m.tipo);
+    const nombre=m.clientes?.nombre||(m.payer_email||'Sin identificar');
+    const esEmail=!m.clientes?.nombre&&nombre.includes('@');
+    return '<div class="mem-card '+estadoCls+' '+colorCls+'">'
+      +'<div class="mem-info">'
+        +'<div class="mem-name">'+nombre
+          +(esEmail?'<span style="font-size:.68rem;color:var(--am);background:#2e200f;padding:.1rem .45rem;border-radius:10px">Sin nombre</span>':'')
+          +'<span class="mem-tag '+tagCls+'">'+memTagLabel(m.tipo)+'</span>'
+          +diasBadge(d)
+        +'</div>'
+        +'<div class="mem-meta">'
+          +(m.payer_email&&m.clientes?.nombre?'✉ '+m.payer_email+' · ':'')
+          +'Próximo pago: <strong>'+(m.fecha_vencimiento||'—')+'</strong>'
+          +(m.clientes?.telefono?' · 📱'+m.clientes.telefono:'')
+        +'</div>'
+      +'</div>'
+      +'<div class="mem-price">$'+Number(m.precio_mensual||0).toLocaleString('es-MX')+'<span style="font-size:.68rem;font-weight:400;color:var(--mu)">/mes</span></div>'
+      +'<div class="mem-actions">'
+        +'<button class="btn bg bi" style="font-size:.95rem" onclick="abrirEditMem(\''+m.id+'\')" title="Editar">✏️</button>'
+        +'<button class="btn bgr2" onclick="abrirPagoMem(\''+m.id+'\','+Number(m.precio_mensual||0)+',\''+(m.fecha_vencimiento||'')+'\')">✓ Pago</button>'
+        +'<button class="btn bg" onclick="abrirDetalleMem(\''+m.id+'\')">Detalle</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+function filtMem(f,btn){memFiltro=f;document.querySelectorAll('.ftb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderMems();}
+async function filtrarMemFecha(){
+  const desde=document.getElementById('mem-desde').value;
+  const hasta=document.getElementById('mem-hasta').value;
+  if(!desde&&!hasta)return;
+  let q=db.from('flujo_caja').select('monto,fecha').eq('categoria','membresia').eq('tipo','ingreso');
+  if(desde)q=q.gte('fecha',desde);
+  if(hasta)q=q.lte('fecha',hasta);
+  const{data:pagos}=await q;
+  const totalPagado=(pagos||[]).reduce((s,p)=>s+Number(p.monto||0),0);
+  const el=document.getElementById('mem-total');
+  if(el)el.textContent='$'+totalPagado.toLocaleString('es-MX')+' facturado en período';
+}
+function limpiarFiltroMem(){document.getElementById('mem-desde').value='';document.getElementById('mem-hasta').value='';LMem();}
+
+function abrirEditMem(id){
+  const m=allMems.find(x=>x.id===id);if(!m)return;
+  memEditId=id;
+  document.getElementById('me-nombre').value=m.clientes?.nombre||'';
+  document.getElementById('me-email').value=m.payer_email||m.clientes?.email||'';
+  document.getElementById('me-tel').value=m.clientes?.telefono||'';
+  document.getElementById('me-monto').value=m.precio_mensual||'';
+  document.getElementById('me-plan').value=m.tipo||'';
+  document.getElementById('me-prox').value=m.fecha_vencimiento||'';
+  document.getElementById('me-estado').value=m.estado||'activa';
+  document.getElementById('m-mem-edit-alert').innerHTML='';
+  abrirModal('m-mem-edit');
+}
+async function guardarEditMem(){
+  if(!memEditId)return;
+  const nombre=document.getElementById('me-nombre').value.trim();
+  const email=document.getElementById('me-email').value.trim();
+  const tel=document.getElementById('me-tel').value.trim();
+  const monto=document.getElementById('me-monto').value;
+  const plan=document.getElementById('me-plan').value.trim();
+  const prox=document.getElementById('me-prox').value;
+  const estado=document.getElementById('me-estado').value;
+  const m=allMems.find(x=>x.id===memEditId);
+  let cliId=m?.cliente_id;
+  if(nombre){
+    if(cliId){await db.from('clientes').update({nombre,telefono:tel||null,email:email||null}).eq('id',cliId);}
+    else{const{data:n}=await db.from('clientes').insert({nombre,telefono:tel||null,email:email||null,activo:true}).select('id').single();cliId=n?.id;}
+  }
+  const{error}=await db.from('membresias').update({cliente_id:cliId||null,tipo:plan||null,precio_mensual:monto||null,fecha_vencimiento:prox||null,estado,activa:estado==='activa',payer_email:email||null}).eq('id',memEditId);
+  if(error){SA('m-mem-edit-alert','Error: '+error.message,'e');return;}
+  SA('m-mem-edit-alert','✅ Guardado');
+  setTimeout(()=>{cerrarModal('m-mem-edit');LMem();LCD();},700);
+}
+
+function abrirPagoMem(id,precio,proxFecha){
+  memPagoId=id;
+  document.getElementById('mp-monto').value=precio||'';
+  document.getElementById('mp-fecha').value=fmt(new Date());
+  const prox=new Date(proxFecha?proxFecha+'T12:00:00':Date.now());
+  prox.setMonth(prox.getMonth()+1);
+  document.getElementById('mp-prox').value=fmt(prox);
+  document.getElementById('m-pago-alert').innerHTML='';
+  abrirModal('m-pago');
+}
+async function confirmarPago(){
+  if(!memPagoId)return;
+  const monto=document.getElementById('mp-monto').value;
+  const fecha=document.getElementById('mp-fecha').value;
+  const prox=document.getElementById('mp-prox').value;
+  if(!monto||!fecha){SA('m-pago-alert','Monto y fecha son obligatorios','e');return;}
+  const mem=allMems.find(x=>x.id===memPagoId);
+  const{error}=await db.from('membresias').update({activa:true,estado:'activa',ultimo_pago:fecha,fecha_vencimiento:prox||null}).eq('id',memPagoId);
+  if(error){SA('m-pago-alert','Error: '+error.message,'e');return;}
+  await db.from('flujo_caja').insert({tipo:'ingreso',concepto:'Membresía '+(mem?.clientes?.nombre||mem?.payer_email||'cliente'),monto,fecha,categoria:'membresia'});
+  await db.from('pagos').insert({cliente_id:mem?.cliente_id||null,membresia_id:memPagoId,monto,metodo_pago:document.getElementById('mp-metodo').value,fecha_pago:fecha,concepto:'Pago membresía '+(mem?.tipo||'')});
+  SA('m-pago-alert','✅ Pago registrado');cerrarModal('m-pago');LMem();
+}
+function abrirDetalleMem(id){
+  const m=allMems.find(x=>x.id===id);if(!m)return;
+  const nombre=m.clientes?.nombre||(m.payer_email||'Sin identificar');
+  document.getElementById('m-det-title').textContent=nombre;
+  document.getElementById('m-det-body').innerHTML=
+    '<div class="dr2"><span class="dl">Plan</span><span>'+(m.tipo||'—')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Precio</span><span style="color:var(--gr);font-weight:600">$'+Number(m.precio_mensual||0).toLocaleString('es-MX')+'/mes</span></div>'
+    +'<div class="dr2"><span class="dl">Estado</span><span>'+badge(m.estado)+' '+diasBadge(diasR(m.fecha_vencimiento))+'</span></div>'
+    +'<div class="dr2"><span class="dl">Último pago</span><span>'+(m.ultimo_pago||'—')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Próximo pago</span><span>'+(m.fecha_vencimiento||'—')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Email MP</span><span>'+(m.payer_email||'—')+'</span></div>';
+  document.getElementById('m-det-link').innerHTML=m.mp_link?'<div style="font-size:.73rem;color:var(--mu);margin-top:.5rem">Link MP:</div><div class="link-box">'+m.mp_link+'</div><button class="btn bg" style="width:100%;margin-bottom:.4rem" onclick="navigator.clipboard.writeText(\''+m.mp_link+'\').then(()=>alert(\'Copiado ✓\'))">📋 Copiar link</button>':'';
+  document.getElementById('m-det-actions').innerHTML=
+    '<button class="btn bgr2" onclick="cerrarModal(\'m-detalle\');abrirPagoMem(\''+id+'\','+Number(m.precio_mensual||0)+',\''+(m.fecha_vencimiento||'\')')+'\')">✓ Registrar pago</button>'
+    +'<button class="btn bre2" onclick="cambiarEstadoMem(\''+id+'\',\'vencida\')">✕ Marcar vencida</button>'
+    +'<button class="btn bg" onclick="abrirEditMem(\''+id+'\');cerrarModal(\'m-detalle\')">✏ Editar</button>';
+  abrirModal('m-detalle');
+}
+async function cambiarEstadoMem(id,estado){await db.from('membresias').update({activa:estado==='activa',estado}).eq('id',id);cerrarModal('m-detalle');LMem();}
+async function guardarMembresia(){
+  const cli=document.getElementById('m-cli').value;
+  const precio=document.getElementById('m-precio').value;
+  if(!cli||!precio){SA('m-nueva-alert','Cliente y precio son obligatorios','e');return;}
+  const plan=document.getElementById('m-plan');
+  const planN=plan.options[plan.selectedIndex]?.text||'Personalizado';
+  const{error}=await db.from('membresias').insert({cliente_id:cli,tipo:planN,precio_mensual:precio,fecha_inicio:fmt(new Date()),fecha_vencimiento:document.getElementById('m-prox').value||null,activa:document.getElementById('m-estado').value==='activa',estado:document.getElementById('m-estado').value,mp_plan_id:plan.value||null,mp_link:document.getElementById('m-link').value||null});
+  if(error){SA('m-nueva-alert','Error: '+error.message,'e');return;}
+  SA('m-nueva-alert','✅ Membresía guardada');cerrarModal('m-nueva');LMem();
+}
+async function abrirModalNuevaMem(){
+  const{data:clis}=await db.from('clientes').select('id,nombre').eq('activo',true).order('nombre');
+  document.getElementById('m-cli').innerHTML='<option value="">Selecciona cliente...</option>'+(clis||[]).map(c=>'<option value="'+c.id+'">'+c.nombre+'</option>').join('');
+  let planesHTML='<option value="">Sin plan (precio personalizado)</option>';
+  if(mpPlanes.length)planesHTML+=mpPlanes.map(p=>'<option value="'+p.id+'">'+p.reason+' — $'+p.auto_recurring?.transaction_amount+'</option>').join('');
+  document.getElementById('m-plan').innerHTML=planesHTML;
+  const prox=new Date();prox.setDate(prox.getDate()+30);
+  document.getElementById('m-prox').value=fmt(prox);
+  document.getElementById('m-nueva-alert').innerHTML='';
+  abrirModal('m-nueva');
+}
+
+// ═══ VINCULACIÓN MP → CLIENTES ═══
+async function LVin(){
+  const{data:mems}=await db.from('membresias').select('id,tipo,precio_mensual,mp_subscription_id,fecha_vencimiento,payer_email').is('cliente_id',null).not('mp_subscription_id','is',null);
+  const sec=document.getElementById('vin-section');
+  const lista=document.getElementById('vin-lista');
+  if(!lista)return;
+  if(!mems?.length){if(sec)sec.style.display='none';lista.innerHTML='';return;}
+  if(sec)sec.style.display='block';
+  lista.innerHTML=mems.map(m=>{
+    return '<div class="vin-card" id="vin-'+m.id+'">'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-weight:600;font-size:.88rem">'+m.tipo+' &nbsp;·&nbsp; <span style="color:var(--gr)">$'+Number(m.precio_mensual||0).toLocaleString('es-MX')+'/mes</span></div>'
+        +'<div style="font-size:.73rem;color:var(--mu);margin-top:2px">'+(m.payer_email?'✉ <strong>'+m.payer_email+'</strong> · ':'Sin email · ')+'Vence: '+(m.fecha_vencimiento||'—')+'</div>'
+        +'<div style="font-size:.65rem;color:var(--mu);margin-top:1px">ID MP: '+(m.mp_subscription_id||'—')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">'
+        +'<input id="txt-'+m.id+'" placeholder="Nombre del cliente" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.45rem .7rem;color:var(--tx);font-family:var(--fn);font-size:.8rem;min-width:180px">'
+        +'<button class="btn bgr2" onclick="vincularMemTexto(\''+m.id+'\')">Guardar ✓</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+async function vincularMemTexto(memId){
+  const txt=document.getElementById('txt-'+memId);
+  const nombre=txt?.value?.trim();
+  if(!nombre){alert('Escribe el nombre del cliente');return;}
+  let{data:cli}=await db.from('clientes').select('id').ilike('nombre',nombre).maybeSingle();
+  if(!cli){const{data:n}=await db.from('clientes').insert({nombre,activo:true}).select('id').single();cli=n;}
+  if(!cli?.id){alert('Error al crear cliente');return;}
+  const{error}=await db.from('membresias').update({cliente_id:cli.id}).eq('id',memId);
+  if(error){alert('Error: '+error.message);return;}
+  document.getElementById('vin-'+memId)?.remove();
+  SA('mema','✅ Vinculado a '+nombre);LMem();LCD();
+}
+
+// ═══ AGENDA ═══
+let cv='s',cd=new Date(),ae=[],agProfs=[],agCli=[],agCat=[],apids=['all'],agEditId=null,agOk=false;
+const HRS=Array.from({length:13},(_,i)=>i+7);
+let profColors={};
+
+async function agInit(){
+  if(!agOk){
+    const[{data:pr},{data:cl},{data:cat}]=await Promise.all([
+      db.from('profesionales').select('id,nombre').eq('activo',true).order('nombre'),
+      db.from('clientes').select('id,nombre').eq('activo',true).order('nombre'),
+      db.from('servicios_catalogo').select('id,nombre,precio').eq('activo',true)
+    ]);
+    agProfs=pr||[];agCli=cl||[];agCat=cat||[];
+    agProfs.forEach((p,i)=>profColors[p.id]=PC[i%PC.length]);
+    renderProfFilter();
+    agOk=true;
+  }
+  await cargarEventos();renderVista();
+}
+function renderProfFilter(){
+  const w=document.getElementById('pf');
+  w.innerHTML='<span class="pp on" data-id="all" onclick="toggleProf(this)" style="background:var(--ac);border-color:var(--ac);color:#fff">Todos</span>'
+    +agProfs.map((p,i)=>'<span class="pp" data-id="'+p.id+'" onclick="toggleProf(this)">'+p.nombre+'</span>').join('');
+}
+function toggleProf(el){
+  const id=el.dataset.id;
+  if(id==='all'){
+    apids=['all'];
+    document.querySelectorAll('.pp').forEach(p=>{const a=p.dataset.id==='all';p.style.background=a?'var(--ac)':'';p.style.borderColor=a?'var(--ac)':'';p.style.color=a?'#fff':'';});
+  } else {
+    apids=apids.filter(x=>x!=='all');
+    const ix=apids.indexOf(id);if(ix>-1)apids.splice(ix,1);else apids.push(id);
+    if(!apids.length)apids=['all'];
+    document.querySelectorAll('.pp').forEach(p=>{
+      const pid=p.dataset.id;
+      if(pid==='all'){p.style.background='';p.style.borderColor='';p.style.color='';return;}
+      const act=apids.includes(pid);const c=profColors[pid]||'var(--ac)';
+      p.style.background=act?c:'';p.style.borderColor=act?c:'';p.style.color=act?'#fff':'';
+    });
+  }
+  renderVista();
+}
+function filtEv(){return apids.includes('all')?ae:ae.filter(e=>e.profesional_id&&apids.includes(e.profesional_id));}
+
+async function cargarEventos(){
+  let f,t;
+  const hoy=new Date();
+  if(cv==='s'){const w=weekStart(cd);f=fmt(w);const we=new Date(w);we.setDate(we.getDate()+6);t=fmt(we);}
+  else if(cv==='m'){f=fmt(new Date(cd.getFullYear(),cd.getMonth(),1));t=fmt(new Date(cd.getFullYear(),cd.getMonth()+1,0));}
+  else if(cv==='l'){const ls=new Date(cd);ls.setDate(ls.getDate()-3);const le=new Date(cd);le.setDate(le.getDate()+14);f=fmt(ls);t=fmt(le);}
+  else{f=t=fmt(cd);}
+  const{data}=await db.from('servicios_agendados').select('*, clientes(nombre), servicios_catalogo(nombre), profesionales(nombre,id)').gte('fecha_servicio',f).lte('fecha_servicio',t).order('hora_inicio');
+  ae=data||[];
+}
+function setVista(v){
+  cv=v;
+  document.querySelectorAll('.vtb').forEach((t,i)=>t.classList.toggle('on',['s','d','l','m'][i]===v));
+  ['vs','vd','vl','vm'].forEach((n,i)=>document.getElementById(n).style.display=['s','d','l','m'][i]===v?'flex':'none');
+  cargarEventos().then(renderVista);
+}
+function renderVista(){updateLabel();if(cv==='s')renderSemana();else if(cv==='d')renderDia();else if(cv==='l')renderLista();else renderMes();}
+function updateLabel(){
+  const l=document.getElementById('pl');
+  if(cv==='s'){const ws=weekStart(cd);const we=new Date(ws);we.setDate(we.getDate()+6);l.textContent=ws.getDate()+' '+MESES[ws.getMonth()].substring(0,3)+' — '+we.getDate()+' '+MESES[we.getMonth()].substring(0,3)+' '+we.getFullYear();}
+  else if(cv==='m'){l.textContent=MESES[cd.getMonth()]+' '+cd.getFullYear();}
+  else if(cv==='d'){l.textContent=DIAS_S[cd.getDay()]+', '+cd.getDate()+' '+MESES[cd.getMonth()]+' '+cd.getFullYear();}
+  else l.textContent='Próximos servicios';
+}
+function evColor(e){return e.profesional_id?(profColors[e.profesional_id]||'var(--ac)'):'var(--ac)';}
+function evHour(e){return e.hora_inicio?parseInt(e.hora_inicio.split(':')[0]):9;}
+function evBlock(e){
+  const c=evColor(e);
+  return '<div class="ev" style="background:'+c+'22;border-left-color:'+c+'" onclick="event.stopPropagation();verDetalle(\''+e.id+'\')">'
+    +'<span class="ec">'+(e.clientes?.nombre||'?')+'</span>'
+    +'<span class="et">'+(e.hora_inicio?e.hora_inicio.substring(0,5):'')+' '+(e.servicios_catalogo?.nombre||'')+'</span>'
+    +(e.profesionales?.nombre?'<span class="ep">'+e.profesionales.nombre+'</span>':'')
+    +'</div>';
+}
+
+function renderSemana(){
+  const ws=weekStart(cd),td=fmt(new Date());
+  const days=Array.from({length:7},(_,i)=>{const d=new Date(ws);d.setDate(d.getDate()+i);return d;});
+  const cols=8;
+  document.getElementById('wh').style.gridTemplateColumns='54px repeat(7,1fr)';
+  document.getElementById('wh').innerHTML='<div style="border-right:1px solid var(--br)"></div>'
+    +days.map(d=>{
+      const isT=fmt(d)===td;
+      return '<div class="whc'+(isT?' td':'')+'"><span class="dd">'+DIAS_S[d.getDay()]+'</span><span class="dn">'+d.getDate()+'</span></div>';
+    }).join('');
+  const evs=filtEv();
+  let html='';
+  HRS.forEach(h=>{
+    let row='<div class="wr" style="grid-template-columns:54px repeat(7,1fr)"><div class="wt">'+h+':00</div>';
+    days.forEach(d=>{
+      const df=fmt(d);
+      const de=evs.filter(e=>e.fecha_servicio===df&&evHour(e)===h);
+      row+='<div class="wc'+(df===td?' tc':'')+'" onclick="celClick(\''+df+'\','+h+')">';
+      de.forEach(e=>row+=evBlock(e));
+      row+='</div>';
+    });
+    row+='</div>';
+    html+=row;
+  });
+  document.getElementById('wb').innerHTML=html;
+}
+
+function renderDia(){
+  const df=fmt(cd);
+  const evs=filtEv().filter(e=>e.fecha_servicio===df);
+  let html='';
+  HRS.forEach(h=>{
+    const he=evs.filter(e=>evHour(e)===h);
+    html+='<div class="dr" style="grid-template-columns:54px 1fr" onclick="celClick(\''+df+'\','+h+')">'
+      +'<div class="dt">'+h+':00</div><div class="de">';
+    he.forEach(e=>{
+      const c=evColor(e);
+      html+='<div class="dev" style="background:'+c+'22;border-left:3px solid '+c+'" onclick="event.stopPropagation();verDetalle(\''+e.id+'\')">'
+        +'<div class="dc">'+(e.clientes?.nombre||'?')+'</div>'
+        +'<div class="dm">'+(e.servicios_catalogo?.nombre||'')+' '+(e.hora_inicio?'· '+e.hora_inicio.substring(0,5):'')+' '+(e.profesionales?.nombre?'· '+e.profesionales.nombre:'')+'</div>'
+        +'<div class="dm">'+badge(e.estado)+'</div>'
+        +'</div>';
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('db').innerHTML=html;
+}
+
+function renderLista(){
+  const evs=filtEv().slice().sort((a,b)=>a.fecha_servicio>b.fecha_servicio?1:-1);
+  const body=document.getElementById('lb');
+  if(!evs.length){body.innerHTML='<div class="em">No hay servicios en este período</div>';return;}
+  const gr={};evs.forEach(e=>{if(!gr[e.fecha_servicio])gr[e.fecha_servicio]=[];gr[e.fecha_servicio].push(e);});
+  let html='';
+  Object.keys(gr).sort().forEach(date=>{
+    const d=new Date(date+'T12:00:00');
+    html+='<div class="lg"><div class="ld">'+d.getDate()+' de '+MESES[d.getMonth()]+' '+d.getFullYear()+'</div>';
+    gr[date].forEach(e=>{
+      const c=evColor(e);
+      html+='<div class="li" onclick="verDetalle(\''+e.id+'\')">'
+        +'<div class="lh">'+(e.hora_inicio?e.hora_inicio.substring(0,5):'—')+'</div>'
+        +'<div class="ldot" style="background:'+c+'"></div>'
+        +'<div class="lin"><div class="lc">'+(e.clientes?.nombre||'?')+'</div>'
+        +'<div class="lm">'+(e.servicios_catalogo?.nombre||'')+' '+(e.profesionales?.nombre?'· '+e.profesionales.nombre:'')+'</div></div>'
+        +badge(e.estado)
+        +'<div class="lp">$'+Number(e.precio||0).toLocaleString('es-MX')+'</div>'
+        +'</div>';
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+
+function renderMes(){
+  const yr=cd.getFullYear(),mo=cd.getMonth();
+  const fd=new Date(yr,mo,1),ld=new Date(yr,mo+1,0),td=fmt(new Date()),evs=filtEv();
+  const cells=[];let sd=fd.getDay();
+  for(let i=0;i<sd;i++){const d=new Date(fd);d.setDate(d.getDate()-(sd-i));cells.push({date:d,o:true});}
+  for(let i=1;i<=ld.getDate();i++)cells.push({date:new Date(yr,mo,i),o:false});
+  const r=7-(cells.length%7);if(r<7)for(let i=1;i<=r;i++){const d=new Date(ld);d.setDate(d.getDate()+i);cells.push({date:d,o:true});}
+  document.getElementById('mg').innerHTML=cells.map(({date,o})=>{
+    const df=fmt(date);const de=evs.filter(e=>e.fecha_servicio===df);const sh=de.slice(0,3);const mr=de.length-3;
+    return '<div class="mc'+(o?' om':'')+(df===td?' td2':'')+'" onclick="irDia(\''+df+'\')">'
+      +'<div class="mdn">'+date.getDate()+'</div>'
+      +sh.map(e=>{const c=evColor(e);return '<div class="mev" style="background:'+c+'33;color:'+c+'">'+(e.clientes?.nombre?.split(' ')[0]||'?')+'</div>';}).join('')
+      +(mr>0?'<div class="mm">+'+mr+' más</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+function irDia(df){cd=new Date(df+'T12:00:00');setVista('d');}
+function celClick(fecha,hora){abrirNuevoServicio(fecha,hora);}
+function navPrev(){if(cv==='s')cd.setDate(cd.getDate()-7);else if(cv==='d')cd.setDate(cd.getDate()-1);else if(cv==='m')cd.setMonth(cd.getMonth()-1);else cd.setDate(cd.getDate()-7);cargarEventos().then(renderVista);}
+function navNext(){if(cv==='s')cd.setDate(cd.getDate()+7);else if(cv==='d')cd.setDate(cd.getDate()+1);else if(cv==='m')cd.setMonth(cd.getMonth()+1);else cd.setDate(cd.getDate()+7);cargarEventos().then(renderVista);}
+function irHoy(){cd=new Date();cargarEventos().then(renderVista);}
+
+function abrirNuevoServicio(fecha,hora){
+  agEditId=null;
+  document.getElementById('maft').textContent='Agendar servicio';
+  document.getElementById('fc').innerHTML='<option value="">Selecciona cliente...</option>'+agCli.map(c=>'<option value="'+c.id+'">'+c.nombre+'</option>').join('');
+  document.getElementById('fs').innerHTML='<option value="">Selecciona servicio...</option>'+agCat.map(s=>'<option value="'+s.id+'" data-precio="'+s.precio+'">'+s.nombre+' — $'+s.precio+'</option>').join('');
+  document.getElementById('fp').innerHTML='<option value="">Sin asignar</option>'+agProfs.map(p=>'<option value="'+p.id+'">'+p.nombre+'</option>').join('');
+  document.getElementById('ff').value=fecha||fmt(cv==='d'?cd:new Date());
+  document.getElementById('fh').value=hora?fmtHora(hora):'09:00';
+  document.getElementById('fpr').value='';
+  document.getElementById('fe').value='por_confirmar';
+  document.getElementById('fn2').value='';
+  document.getElementById('maa').innerHTML='';
+  abrirModal('maf');
+}
+function autoPrice(){const o=document.getElementById('fs').options[document.getElementById('fs').selectedIndex];if(o?.dataset?.precio)document.getElementById('fpr').value=o.dataset.precio;}
+async function guardarAgenda(){
+  const c=document.getElementById('fc').value,s=document.getElementById('fs').value,f=document.getElementById('ff').value,p=document.getElementById('fpr').value;
+  if(!c||!s||!f||!p){document.getElementById('maa').innerHTML='<div class="al ale">Completa los campos obligatorios</div>';return;}
+  const pay={cliente_id:c,servicio_id:s,fecha_servicio:f,precio:p,profesional_id:document.getElementById('fp').value||null,hora_inicio:document.getElementById('fh').value||null,estado:document.getElementById('fe').value,notas:document.getElementById('fn2').value||null};
+  let error;
+  if(agEditId)({error}=await db.from('servicios_agendados').update(pay).eq('id',agEditId));
+  else({error}=await db.from('servicios_agendados').insert(pay));
+  if(error){document.getElementById('maa').innerHTML='<div class="al ale">'+error.message+'</div>';return;}
+  cerrarModal('maf');await cargarEventos();renderVista();
+}
+function verDetalle(id){
+  const e=ae.find(x=>x.id===id);if(!e)return;
+  document.getElementById('dtt').textContent=e.clientes?.nombre||'Servicio';
+  const d=new Date(e.fecha_servicio+'T12:00:00');
+  document.getElementById('db2').innerHTML=
+    '<div class="dr2"><span class="dl">Servicio</span><span>'+(e.servicios_catalogo?.nombre||'—')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Profesional</span><span>'+(e.profesionales?.nombre||'—')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Fecha</span><span>'+d.getDate()+' de '+MESES[d.getMonth()]+' '+d.getFullYear()+'</span></div>'
+    +'<div class="dr2"><span class="dl">Hora</span><span>'+(e.hora_inicio?e.hora_inicio.substring(0,5):'—')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Precio</span><span style="color:var(--gr);font-weight:600">$'+Number(e.precio||0).toLocaleString('es-MX')+'</span></div>'
+    +'<div class="dr2"><span class="dl">Estado</span><span>'+badge(e.estado)+'</span></div>'
+    +(e.notas?'<div class="dr2"><span class="dl">Notas</span><span>'+e.notas+'</span></div>':'');
+  document.getElementById('dac').innerHTML=
+    '<button class="sbt" onclick="cambiarEstado(\''+id+'\',\'confirmado\')">✓ Confirmar</button>'
+    +'<button class="sbt" onclick="cambiarEstado(\''+id+'\',\'realizado\')" style="color:var(--ac2)">★ Realizado</button>'
+    +'<button class="sbt" onclick="cambiarEstado(\''+id+'\',\'no_realizado\')" style="color:var(--re)">✕ No realizado</button>'
+    +'<button class="sbt" onclick="cerrarModal(\'mdet\');editarServicio(\''+id+'\')" style="margin-left:auto">✏ Editar</button>';
+  abrirModal('mdet');
+}
+async function cambiarEstado(id,estado){
+  await db.from('servicios_agendados').update({estado}).eq('id',id);
+  if(estado==='realizado'){
+    const{data:srv}=await db.from('servicios_agendados').select('*, clientes(nombre), servicios_catalogo(nombre,id)').eq('id',id).single();
+    if(srv&&Number(srv.precio)>0){
+      const{data:ex}=await db.from('flujo_caja').select('id').eq('concepto','Serv: '+(srv.servicios_catalogo?.nombre||'?')+' — '+(srv.clientes?.nombre||'?')).eq('fecha',srv.fecha_servicio).maybeSingle();
+      if(!ex)await db.from('flujo_caja').insert({tipo:'ingreso',concepto:'Serv: '+(srv.servicios_catalogo?.nombre||'?')+' — '+(srv.clientes?.nombre||'?'),monto:srv.precio,fecha:srv.fecha_servicio,categoria:'servicio'});
+      await calcularComision(id,srv);
+    }
+  }
+  cerrarModal('mdet');await cargarEventos();renderVista();
+}
+async function calcularComision(id,srv){
+  if(!srv){{const{data:s}=await db.from('servicios_agendados').select('*, clientes(nombre), servicios_catalogo(nombre,id)').eq('id',id).single();srv=s;}}
+  if(!srv?.profesional_id||!srv?.servicio_id)return;
+  const{data:com}=await db.from('comisiones').select('*').eq('profesional_id',srv.profesional_id).eq('servicio_id',srv.servicio_id).maybeSingle();
+  if(!com)return;
+  const monto=com.tipo==='porcentaje'?(Number(srv.precio)*(com.valor/100)):Number(com.valor);
+  await db.from('flujo_caja').insert({tipo:'egreso',concepto:'Comisión '+(srv.profesionales?.nombre||'?')+' — '+(srv.servicios_catalogo?.nombre||'?'),monto:monto.toFixed(2),fecha:srv.fecha_servicio,categoria:'salario'});
+}
+function editarServicio(id){
+  const e=ae.find(x=>x.id===id);if(!e)return;
+  agEditId=id;
+  document.getElementById('maft').textContent='Editar servicio';
+  document.getElementById('fc').innerHTML='<option value="">Selecciona cliente...</option>'+agCli.map(c=>'<option value="'+c.id+'"'+(c.id===e.cliente_id?' selected':'')+'>'+c.nombre+'</option>').join('');
+  document.getElementById('fs').innerHTML='<option value="">Selecciona servicio...</option>'+agCat.map(s=>'<option value="'+s.id+'"'+(s.id===e.servicio_id?' selected':'')+' data-precio="'+s.precio+'">'+s.nombre+' — $'+s.precio+'</option>').join('');
+  document.getElementById('fp').innerHTML='<option value="">Sin asignar</option>'+agProfs.map(p=>'<option value="'+p.id+'"'+(p.id===e.profesional_id?' selected':'')+'>'+p.nombre+'</option>').join('');
+  document.getElementById('ff').value=e.fecha_servicio;
+  document.getElementById('fh').value=e.hora_inicio?e.hora_inicio.substring(0,5):'';
+  document.getElementById('fpr').value=e.precio||'';
+  document.getElementById('fe').value=e.estado||'por_confirmar';
+  document.getElementById('fn2').value=e.notas||'';
+  document.getElementById('maa').innerHTML='';
+  abrirModal('maf');
+}
+
+// ═══ PROFESIONALES ═══
+let allPros=[],proEditId=null;
+async function LPro(){
+  const{data}=await db.from('profesionales').select('*').order('nombre');
+  allPros=data||[];renderPros();
+  document.getElementById('pro-count').textContent=allPros.length+' profesionales';
+}
+function renderPros(){
+  const lista=document.getElementById('pro-lista');
+  if(!allPros.length){lista.innerHTML='<div class="em">No hay profesionales</div>';return;}
+  lista.innerHTML=allPros.map((p,i)=>{
+    const c=PC[i%PC.length];const ini=(p.nombre?.charAt(0)||'?').toUpperCase();
+    return '<div class="pro-card">'
+      +'<div class="pro-avatar" style="background:'+c+'22;color:'+c+'">'+ini+'</div>'
+      +'<div class="pro-info"><div class="pro-name">'+p.nombre+'</div>'
+      +'<div class="pro-meta">'+(p.telefono?'📱 '+p.telefono+' · ':'')+( p.email?'✉ '+p.email+' · ':'')+' Comisión base: '+(p.porcentaje_comision||0)+'%</div></div>'
+      +'<div style="display:flex;gap:.4rem">'
+      +'<button class="btn bg" onclick="editarPro(\''+p.id+'\')">✏ Editar</button>'
+      +'<button class="btn bre2" onclick="eliminarPro(\''+p.id+'\',\''+p.nombre.replace(/'/g,'')+'\')" style="padding:.42rem .6rem">✕</button>'
+      +'</div></div>';
+  }).join('');
+}
+function abrirNuevoPro(){proEditId=null;document.getElementById('m-pro-title').textContent='Nuevo profesional';['pro-nombre','pro-tel','pro-email','pro-notas'].forEach(i=>document.getElementById(i).value='');document.getElementById('pro-com').value=30;document.getElementById('m-pro-alert').innerHTML='';abrirModal('m-pro');}
+function editarPro(id){
+  const p=allPros.find(x=>x.id===id);if(!p)return;
+  proEditId=id;document.getElementById('m-pro-title').textContent='Editar profesional';
+  document.getElementById('pro-nombre').value=p.nombre||'';
+  document.getElementById('pro-tel').value=p.telefono||'';
+  document.getElementById('pro-com').value=p.porcentaje_comision||30;
+  document.getElementById('pro-email').value=p.email||'';
+  document.getElementById('pro-notas').value=p.notas||'';
+  document.getElementById('m-pro-alert').innerHTML='';
+  abrirModal('m-pro');
+}
+async function guardarPro(){
+  const nombre=document.getElementById('pro-nombre').value.trim();
+  if(!nombre){SA('proa','El nombre es obligatorio','e');return;}
+  const pay={nombre,telefono:document.getElementById('pro-tel').value||null,porcentaje_comision:parseFloat(document.getElementById('pro-com').value)||30,email:document.getElementById('pro-email').value||null,notas:document.getElementById('pro-notas').value||null,activo:true};
+  let error;
+  if(proEditId)({error}=await db.from('profesionales').update(pay).eq('id',proEditId));
+  else({error}=await db.from('profesionales').insert(pay));
+  if(error){SA('proa','Error: '+error.message,'e');return;}
+  SA('proa','✅ Guardado');cerrarModal('m-pro');proEditId=null;LPro();agOk=false;
+}
+async function eliminarPro(id,nombre){
+  if(!confirm('¿Eliminar a '+nombre+'?'))return;
+  const{error}=await db.from('profesionales').delete().eq('id',id);
+  if(error){SA('proa','Error: '+error.message,'e');return;}
+  SA('proa','✅ Eliminado');LPro();agOk=false;
+}
+
+// ═══ SERVICIOS (CATÁLOGO + COMISIONES) ═══
+let srvEditId=null;
+async function LSrv(){
+  const[{data:cat},{data:coms}]=await Promise.all([
+    db.from('servicios_catalogo').select('*').order('nombre'),
+    db.from('comisiones').select('*, profesionales(nombre), servicios_catalogo(nombre)').order('created_at',{ascending:false})
+  ]);
+  // Catálogo
+  document.getElementById('cat-tb').innerHTML=cat?.length?cat.map(s=>'<tr>'
+    +'<td><strong>'+s.nombre+'</strong>'+(s.descripcion?'<br><span style="font-size:.73rem;color:var(--mu)">'+s.descripcion+'</span>':'')+'</td>'
+    +'<td style="color:var(--gr);font-weight:600">$'+Number(s.precio).toLocaleString('es-MX')+'</td>'
+    +'<td>'+(s.activo?'<span class="bx bgr">Activo</span>':'<span class="bx bre">Inactivo</span>')+'</td>'
+    +'<td style="display:flex;gap:.35rem"><button class="btn bg bi" onclick="editarSrv(\''+s.id+'\',\''+s.nombre.replace(/'/g,'')+'\','+s.precio+',\''+(s.descripcion||'')+'\','+s.activo+')">✏</button>'
+    +'<button class="btn bre2 bi" onclick="toggleSrv(\''+s.id+'\','+s.activo+')">'+(s.activo?'✕':'✓')+'</button></td>'
+    +'</tr>').join(''):'<tr><td colspan="4" style="text-align:center;color:var(--mu);padding:1.5rem">No hay servicios en el catálogo</td></tr>';
+  // Comisiones
+  document.getElementById('com-lista').innerHTML=coms?.length?'<div class="tw"><table><thead><tr><th>Profesional</th><th>Servicio</th><th>Comisión</th><th></th></tr></thead><tbody>'
+    +coms.map(c=>'<tr><td>'+(c.profesionales?.nombre||'—')+'</td><td>'+(c.servicios_catalogo?.nombre||'—')+'</td><td style="color:var(--gr);font-weight:600">'+(c.tipo==='porcentaje'?c.valor+'%':'$'+Number(c.valor).toLocaleString('es-MX'))+'</td><td><button class="btn bre2 bi" onclick="eliminarComision(\''+c.id+'\')">✕</button></td></tr>').join('')
+    +'</tbody></table></div>':'<div style="color:var(--mu);font-size:.83rem">No hay comisiones configuradas aún</div>';
+  // Agendados
+  const{data}=await db.from('servicios_agendados').select('*, clientes(nombre), servicios_catalogo(nombre), profesionales(nombre)').order('fecha_servicio',{ascending:false}).limit(50);
+  document.getElementById('stb').innerHTML=data?.length?data.map(s=>'<tr><td><strong>'+(s.clientes?.nombre||'—')+'</strong></td><td>'+(s.servicios_catalogo?.nombre||'—')+'</td><td>'+(s.profesionales?.nombre||'—')+'</td><td>'+s.fecha_servicio+' '+(s.hora_inicio?s.hora_inicio.substring(0,5):'')+'</td><td>$'+Number(s.precio).toLocaleString('es-MX')+'</td><td>'+badge(s.estado)+'</td></tr>').join(''):'<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:1.5rem">No hay servicios agendados</td></tr>';
+}
+function abrirNuevoSrv(){srvEditId=null;document.getElementById('m-srv-title').textContent='Nuevo servicio';['srv-nombre','srv-desc'].forEach(i=>document.getElementById(i).value='');document.getElementById('srv-precio').value='';document.getElementById('srv-estado').value='true';document.getElementById('m-srv-alert').innerHTML='';abrirModal('m-srv-nuevo');}
+function editarSrv(id,nombre,precio,desc,activo){srvEditId=id;document.getElementById('m-srv-title').textContent='Editar servicio';document.getElementById('srv-nombre').value=nombre;document.getElementById('srv-precio').value=precio;document.getElementById('srv-desc').value=desc;document.getElementById('srv-estado').value=String(activo);document.getElementById('m-srv-alert').innerHTML='';abrirModal('m-srv-nuevo');}
+async function guardarSrv(){
+  const nombre=document.getElementById('srv-nombre').value.trim();const precio=document.getElementById('srv-precio').value;
+  if(!nombre||!precio){SA('sva','Nombre y precio son obligatorios','e');return;}
+  const pay={nombre,precio:parseFloat(precio),descripcion:document.getElementById('srv-desc').value||null,activo:document.getElementById('srv-estado').value==='true'};
+  let error;
+  if(srvEditId)({error}=await db.from('servicios_catalogo').update(pay).eq('id',srvEditId));
+  else({error}=await db.from('servicios_catalogo').insert(pay));
+  if(error){SA('sva','Error: '+error.message,'e');return;}
+  srvEditId=null;cerrarModal('m-srv-nuevo');['srv-nombre','srv-precio','srv-desc'].forEach(i=>document.getElementById(i).value='');LSrv();agOk=false;
+}
+async function toggleSrv(id,activo){await db.from('servicios_catalogo').update({activo:!activo}).eq('id',id);LSrv();agOk=false;}
+async function abrirModalComision(){
+  const[{data:pros},{data:cat}]=await Promise.all([
+    db.from('profesionales').select('id,nombre').eq('activo',true).order('nombre'),
+    db.from('servicios_catalogo').select('id,nombre').eq('activo',true)
+  ]);
+  document.getElementById('com-pro').innerHTML='<option value="">Profesional...</option>'+(pros||[]).map(p=>'<option value="'+p.id+'">'+p.nombre+'</option>').join('');
+  document.getElementById('com-srv').innerHTML='<option value="">Servicio...</option>'+(cat||[]).map(s=>'<option value="'+s.id+'">'+s.nombre+'</option>').join('');
+  document.getElementById('com-val').value='';document.getElementById('m-com-alert').innerHTML='';
+  abrirModal('m-com');
+}
+async function guardarComision(){
+  const pro=document.getElementById('com-pro').value,srv=document.getElementById('com-srv').value,val=document.getElementById('com-val').value;
+  if(!pro||!srv||!val){SA('m-com-alert','Todos los campos son obligatorios','e');return;}
+  const{error}=await db.from('comisiones').insert({profesional_id:pro,servicio_id:srv,tipo:document.getElementById('com-tipo').value,valor:parseFloat(val)});
+  if(error){SA('m-com-alert','Error: '+error.message,'e');return;}
+  cerrarModal('m-com');LSrv();
+}
+async function eliminarComision(id){if(!confirm('¿Eliminar esta comisión?'))return;await db.from('comisiones').delete().eq('id',id);LSrv();}
+
+// ═══ CAJA ═══
+async function LCX(){
+  const desde=document.getElementById('cx-desde')?.value;
+  const hasta=document.getElementById('cx-hasta')?.value;
+  let q=db.from('flujo_caja').select('*').order('fecha',{ascending:false}).limit(200);
+  if(desde)q=q.gte('fecha',desde);
+  if(hasta)q=q.lte('fecha',hasta);
+  const{data}=await q;
+  const ing=(data||[]).filter(r=>r.tipo==='ingreso').reduce((s,r)=>s+Number(r.monto),0);
+  const egr=(data||[]).filter(r=>r.tipo==='egreso').reduce((s,r)=>s+Number(r.monto),0);
+  document.getElementById('ci').textContent='$'+ing.toLocaleString('es-MX');
+  document.getElementById('ce').textContent='$'+egr.toLocaleString('es-MX');
+  document.getElementById('cb').textContent='$'+(ing-egr).toLocaleString('es-MX');
+  document.getElementById('cxtb').innerHTML=data?.length?data.map(r=>'<tr><td>'+r.fecha+'</td><td>'+r.concepto+'</td><td><span class="bx bpu">'+(r.categoria||'—')+'</span></td><td>'+(r.tipo==='ingreso'?'<span class="bx bgr">Ingreso</span>':'<span class="bx bre">Egreso</span>')+'</td><td style="font-weight:500;color:'+(r.tipo==='ingreso'?'var(--gr)':'var(--re)')+'">'+(r.tipo==='ingreso'?'+':'-')+'$'+Number(r.monto).toLocaleString('es-MX')+'</td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--mu);padding:1.5rem">Sin movimientos en este período</td></tr>';
+}
+function limpiarCaja(){document.getElementById('cx-desde').value='';document.getElementById('cx-hasta').value='';LCX();}
+async function guardarCaja(){
+  const c=document.getElementById('cxc').value.trim(),m=document.getElementById('cxm').value;
+  if(!c||!m){SA('cxa','Concepto y monto son obligatorios','e');return;}
+  const{error}=await db.from('flujo_caja').insert({tipo:document.getElementById('cxt').value,concepto:c,monto:m,fecha:document.getElementById('cxf').value||fmt(new Date()),categoria:document.getElementById('cxk').value});
+  if(error){SA('cxa','Error: '+error.message,'e');return;}
+  SA('cxa','✅ Registrado');cerrarModal('mcx');LCX();
+}
+
+// ═══ OVERRIDES MODALES ESPECIALES ═══
+const _abrirModal=abrirModal;
+window.abrirModal=function(id){
+  if(id==='m-nueva'){abrirModalNuevaMem();return;}
+  if(id==='m-com'){abrirModalComision();return;}
+  _abrirModal(id);
+};
+
+// INIT
+LCD();
+</script>
+</body>
+</html>
