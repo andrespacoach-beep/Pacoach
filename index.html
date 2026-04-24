@@ -662,11 +662,33 @@ async function LCL(){
 function RC(l){
   const g=document.getElementById('cg');
   if(!l.length){g.innerHTML='<div class="em">👥<br>No hay clientes</div>';return;}
-  g.innerHTML=l.map(c=>{
-    const ma=c.membresias?.find(m=>m.activa&&m.estado==='activa');
-    const ms=Math.floor((Date.now()-new Date(c.created_at))/864e5/30);
+  g.innerHTML=l.map(cli=>{
+    const ma=cli.membresias?.find(m=>m.activa&&m.estado==='activa');
+    const ms=Math.floor((Date.now()-new Date(cli.created_at))/864e5/30);
     const d=ma?diasR(ma.fecha_vencimiento):null;
-    return '<div class="cc"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="cn">'+c.nombre+'</div>'+(ma?'<span class="bx bgr">Activa</span>':'<span class="bx bam">Sin membresía</span>')+'</div><div class="cm">'+(c.telefono?'📱 '+c.telefono+'<br>':'')+(c.colonia?'📍 '+c.colonia:'')+' '+(ma?'💳 $'+Number(ma.precio_mensual).toLocaleString('es-MX')+'/mes':'')+'</div><div class="cf"><span style="font-size:.73rem;color:var(--mu)">'+ms+' mes'+(ms!==1?'es':'')+'</span>'+(d!==null?diasBadge(d):'')+'</div></div>';
+    const tieneCoords=cli.latitud&&cli.longitud;
+    return '<div class="cc">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.35rem">'
+        +'<div class="cn">'+cli.nombre+'</div>'
+        +(ma?'<span class="bx bgr">Activa</span>':'<span class="bx bam">Sin membresía</span>')
+      +'</div>'
+      +'<div class="cm">'
+        +(cli.telefono?'📱 '+cli.telefono+'<br>':'')
+        +(cli.email?'✉ '+cli.email+'<br>':'')
+        +(cli.direccion?'📍 '+cli.direccion.substring(0,45)+(cli.direccion.length>45?'...':'')+'<br>':'')
+        +(ma?'💳 $'+Number(ma.precio_mensual).toLocaleString('es-MX')+'/mes':'')
+      +'</div>'
+      +'<div class="cf">'
+        +'<span style="font-size:.73rem;color:var(--mu)">'
+          +(tieneCoords?'<span style="color:var(--gr)">📍</span> ':' <span style="color:var(--am)">⚠️</span> ')
+          +ms+' mes'+(ms!==1?'es':'')
+        +'</span>'
+        +'<div style="display:flex;gap:.3rem;align-items:center">'
+          +(d!==null?diasBadge(d):'')
+          +'<button class="btn bg bi" style="font-size:.8rem;padding:.28rem .5rem" onclick="event.stopPropagation();editarCliente(''+cli.id+'')">✏️</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
   }).join('');
 }
 function FC(){const q=document.getElementById('sc0').value.toLowerCase();RC(allCli.filter(c=>c.nombre?.toLowerCase().includes(q)||c.telefono?.includes(q)||c.colonia?.toLowerCase().includes(q)));}
