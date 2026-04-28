@@ -347,9 +347,13 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
         <button class="btn bg tb-period-btn" style="font-size:.73rem" onclick="setPeriodoCaja('todo',this)">Todo</button>
       </div>
       <div style="display:flex;align-items:center;gap:.35rem;margin-left:auto;flex-wrap:wrap">
-        <input type="date" id="cx-desde" onchange="LCX()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem">
+        <div style="position:relative">
+          <input type="date" id="cx-desde" onchange="LCX()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem;cursor:pointer">
+        </div>
         <span style="color:var(--mu);font-size:.78rem">→</span>
-        <input type="date" id="cx-hasta" onchange="LCX()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem">
+        <div style="position:relative">
+          <input type="date" id="cx-hasta" onchange="LCX()" style="background:var(--bg);border:1px solid var(--br);border-radius:9px;padding:.38rem .65rem;color:var(--tx);font-family:var(--fn);font-size:.78rem;cursor:pointer">
+        </div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
@@ -379,7 +383,7 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
     <div class="sc"><div class="sl">Margen</div><div class="sv gr" id="cx-margen">—</div></div>
   </div>
   <div class="card"><div class="tw">
-    <table><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Tipo</th><th>Monto</th></tr></thead>
+    <table><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Tipo</th><th>Monto</th><th style="text-align:center">Acciones</th></tr></thead>
     <tbody id="cxtb"></tbody></table>
   </div></div>
 </div></div>
@@ -623,14 +627,44 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
 <!-- Caja -->
 <div class="mb" id="mcx"><div class="mo">
   <div class="mt">Registrar movimiento</div>
+  <input type="hidden" id="cxid" value="">
   <div class="fg">
     <div class="fi"><label>Tipo *</label><select id="cxt"><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option></select></div>
-    <div class="fi"><label>Monto *</label><input type="number" id="cxm"></div>
+    <div class="fi"><label>Monto *</label><input type="number" id="cxm" step="0.01"></div>
     <div class="fi ff"><label>Concepto *</label><input id="cxc"></div>
-    <div class="fi"><label>Categoría</label><select id="cxk"><option value="servicio">Servicio</option><option value="membresia">Membresía</option><option value="salario">Salario</option><option value="material">Material</option><option value="gasolina">Gasolina</option><option value="otro">Otro</option></select></div>
+    <div class="fi"><label>Categoría</label><div style="display:flex;gap:.4rem">
+      <select id="cxk" style="flex:1">
+        <option value="servicio">Servicio</option>
+        <option value="membresia">Membresía</option>
+        <option value="salario">Salario</option>
+        <option value="material">Material</option>
+        <option value="gasolina">Gasolina</option>
+        <option value="furniture">Furniture</option>
+        <option value="marketing">Marketing</option>
+        <option value="otro">Otro</option>
+      </select>
+      <button class="btn bg" style="padding:.42rem .6rem" onclick="abrirAgregarCategoría()" title="Agregar categoría">+</button>
+    </div></div>
     <div class="fi"><label>Fecha</label><input type="date" id="cxf"></div>
   </div>
-  <div class="fa"><button class="btn bg" onclick="cerrarModal('mcx')">Cancelar</button><button class="btn bp" onclick="guardarCaja()">Guardar</button></div>
+  <div style="display:flex;gap:.6rem;justify-content:space-between;margin-top:1.2rem;flex-wrap:wrap">
+    <div style="display:flex;gap:.4rem">
+      <button class="btn bre2" id="btn-caja-borrar" style="display:none" onclick="borrarMovimientoCaja()">🗑️ Borrar</button>
+    </div>
+    <div style="display:flex;gap:.4rem">
+      <button class="btn bg" onclick="cerrarModal('mcx')">Cancelar</button>
+      <button class="btn bp" id="btn-caja-guardar" onclick="guardarCaja()">Guardar</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- Modal agregar categoría -->
+<div class="mb" id="m-cat-nueva"><div class="mo">
+  <div class="mt">Nueva Categoría</div>
+  <div class="fg">
+    <div class="fi ff"><label>Nombre categoría *</label><input id="cat-nombre" placeholder="ej: Publicidad, Alquiler, etc"></div>
+  </div>
+  <div class="fa"><button class="btn bg" onclick="cerrarModal('m-cat-nueva')">Cancelar</button><button class="btn bp" onclick="guardarCategoríaNueva()">Guardar</button></div>
 </div></div>
 
 <script>
@@ -1482,8 +1516,8 @@ async function LCX(){
   const mEl=document.getElementById('cx-margen');
   if(mEl){mEl.textContent=margen+'%';mEl.style.color=margen>=0?'var(--gr)':'var(--re)';}
   document.getElementById('cxtb').innerHTML=rows.length
-    ?rows.map(r=>'<tr><td>'+r.fecha+'</td><td>'+r.concepto+'</td><td><span class="bx bpu">'+(r.categoria||'—')+'</span></td><td>'+(r.tipo==='ingreso'?'<span class="bx bgr">Ingreso</span>':'<span class="bx bre">Egreso</span>')+'</td><td style="font-weight:500;color:'+(r.tipo==='ingreso'?'var(--gr)':'var(--re)')+'">'+(r.tipo==='ingreso'?'+':'-')+'$'+Number(r.monto).toLocaleString('es-MX')+'</td></tr>').join('')
-    :'<tr><td colspan="5" style="text-align:center;color:var(--mu);padding:1.5rem">Sin movimientos en este período</td></tr>';
+    ?rows.map(r=>'<tr><td>'+r.fecha+'</td><td>'+r.concepto+'</td><td><span class="bx bpu">'+(r.categoria||'—')+'</span></td><td>'+(r.tipo==='ingreso'?'<span class="bx bgr">Ingreso</span>':'<span class="bx bre">Egreso</span>')+'</td><td style="font-weight:500;color:'+(r.tipo==='ingreso'?'var(--gr)':'var(--re)')+'">'+(r.tipo==='ingreso'?'+':'-')+'$'+Number(r.monto).toLocaleString('es-MX')+'</td><td style="text-align:center;white-space:nowrap"><button class="btn bg" style="padding:.25rem .5rem;font-size:.7rem" onclick="editarMovimientoCaja(\''+r.id+'\')">✏️</button><button class="btn bre2" style="padding:.25rem .5rem;font-size:.7rem" onclick="confirmarBorrarMovimiento(\''+r.id+'\')">🗑️</button></td></tr>').join('')
+    :'<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:1.5rem">Sin movimientos en este período</td></tr>';
 }
 function limpiarCaja(){
   document.getElementById('cx-desde').value='';
@@ -1495,11 +1529,70 @@ function limpiarCaja(){
   LCX();
 }
 async function guardarCaja(){
+  const id=document.getElementById('cxid').value;
   const c=document.getElementById('cxc').value.trim(),m=document.getElementById('cxm').value;
   if(!c||!m){SA('cxa','Concepto y monto son obligatorios','e');return;}
-  const{error}=await db.from('flujo_caja').insert({tipo:document.getElementById('cxt').value,concepto:c,monto:m,fecha:document.getElementById('cxf').value||fmt(new Date()),categoria:document.getElementById('cxk').value});
+  const data={tipo:document.getElementById('cxt').value,concepto:c,monto:m,fecha:document.getElementById('cxf').value||fmt(new Date()),categoria:document.getElementById('cxk').value};
+  let error;
+  if(id){
+    ({error}=await db.from('flujo_caja').update(data).eq('id',id));
+  }else{
+    ({error}=await db.from('flujo_caja').insert(data));
+  }
   if(error){SA('cxa','Error: '+error.message,'e');return;}
-  SA('cxa','✅ Registrado');cerrarModal('mcx');LCX();
+  document.getElementById('cxid').value='';
+  document.getElementById('btn-caja-borrar').style.display='none';
+  SA('cxa','✅ '+(id?'Actualizado':'Registrado'));
+  cerrarModal('mcx');
+  LCX();
+}
+
+async function editarMovimientoCaja(id){
+  const{data}=await db.from('flujo_caja').select('*').eq('id',id).single();
+  if(!data)return;
+  document.getElementById('cxid').value=id;
+  document.getElementById('cxt').value=data.tipo;
+  document.getElementById('cxm').value=data.monto;
+  document.getElementById('cxc').value=data.concepto;
+  document.getElementById('cxk').value=data.categoria||'otro';
+  document.getElementById('cxf').value=data.fecha;
+  document.getElementById('btn-caja-borrar').style.display='block';
+  document.querySelector('.mt').textContent='Editar movimiento';
+  abrirModal('mcx');
+}
+
+async function borrarMovimientoCaja(){
+  const id=document.getElementById('cxid').value;
+  if(!id||!confirm('¿Estás seguro de que quieres borrar este movimiento?'))return;
+  const{error}=await db.from('flujo_caja').delete().eq('id',id);
+  if(error){alert('Error al borrar: '+error.message);return;}
+  cerrarModal('mcx');LCX();
+}
+
+async function confirmarBorrarMovimiento(id){
+  if(!confirm('¿Borrar este movimiento?'))return;
+  await db.from('flujo_caja').delete().eq('id',id);
+  LCX();
+}
+
+function abrirAgregarCategoría(){
+  document.getElementById('cat-nombre').value='';
+  abrirModal('m-cat-nueva');
+}
+
+async function guardarCategoríaNueva(){
+  const nom=document.getElementById('cat-nombre').value.trim();
+  if(!nom){alert('El nombre es obligatorio');return;}
+  const select=document.getElementById('cxk');
+  if([...select.options].some(o=>o.value===nom.toLowerCase())){
+    alert('Esta categoría ya existe');return;
+  }
+  const opt=document.createElement('option');
+  opt.value=nom.toLowerCase();
+  opt.textContent=nom;
+  select.appendChild(opt);
+  select.value=nom.toLowerCase();
+  cerrarModal('m-cat-nueva');
 }
 
 // ═══ OVERRIDES MODALES ESPECIALES ═══
